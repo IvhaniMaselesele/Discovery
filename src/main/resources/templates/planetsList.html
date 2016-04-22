@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head lang="en">
+
+    <title>Spring Framework Guru</title>
+
+    <!--/*/ <th:block th:include="fragments/headerinc :: head"></th:block> /*/-->
+</head>
+<body>
+
+<div class="container">
+    <!--/*/ <th:block th:include="fragments/header :: header"></th:block> /*/-->
+    <div class="jumbotron">
+        <div>
+            <a href="/addPlanetPage" class="btn btn-success optionButtons" role="button">New Planet</a><br/><br/>
+            <table class="table table-bordered table-hover">
+                <tr>
+                    <th></th>
+                    <th>Planet name</th>
+                    <th></th>
+                    <th></th>
+                </tr>
+                <tr th:each="p,iterationStatus  : ${planets}">
+                    <td th:text="${iterationStatus.count}">1</td>
+                    <td th:text="${p.name}">001</td>
+                    <td><a th:href="${'/editPlanetPage/'}+${p.node}">Edit</a></td>
+                    <td><a th:href="${'/deletePlanet/'}+${p.node}">Delete</a></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>
