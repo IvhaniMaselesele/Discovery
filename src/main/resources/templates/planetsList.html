@@ -24,11 +24,32 @@
                     <td th:text="${iterationStatus.count}">1</td>
                     <td th:text="${p.name}">001</td>
                     <td><a th:href="${'/editPlanetPage/'}+${p.node}">Edit</a></td>
-                    <td><a th:href="${'/deletePlanet/'}+${p.node}">Delete</a></td>
+                    <td><a th:onclick="'javascript:deletePlanet(\'' + ${p.node} + '\');'">Delete</a></td>
                 </tr>
             </table>
         </div>
     </div>
+
+    <script th:inline="javascript">
+        function deletePlanet(node) {
+            alert(node);
+            $.ajax({
+                datatype: "json",
+                type: "DELETE",
+                url: "/deletePlanet/" + node,
+                async: true,
+                //data: {node: node},
+                success: function (response) {
+                    window.location.href = "/planetsList";
+                },
+                error: function (e) {
+                    alert('Error: ' + e);
+                }
+            });
+
+        }
+    </script>
+
 
 </div>
 </body>

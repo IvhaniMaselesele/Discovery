@@ -1,21 +1,35 @@
 package za.co.discovery.assignment.services;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import za.co.discovery.assignment.dataAccess.PlanetDAO;
 import za.co.discovery.assignment.models.Planet;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class PlanetService {
-    private List<Planet> planets;
+
+    PlanetDAO planetDAO;
+
+    @Autowired
+    public PlanetService(PlanetDAO planetDAO) {
+        this.planetDAO = planetDAO;
+    }
+
+    public Planet persistPlanet(Planet planet) {
+        return planetDAO.save(planet);
+    }
 
     public List<Planet> getPlanets() {
-        planets = new ArrayList<>();
-        planets.add(new Planet("1", "1"));
-        planets.add(new Planet("2", "2"));
-        planets.add(new Planet("3", "3"));
-        planets.add(new Planet("4", "4"));
-        return planets;
+        return planetDAO.retrieveAll();
+    }
+
+    public Planet retrievePlanet(String planetId) {
+        return planetDAO.retrieve(planetId);
+    }
+
+    public void deletePlanet(String planetNode) {
+        planetDAO.deleteByNode(planetNode);
     }
 }

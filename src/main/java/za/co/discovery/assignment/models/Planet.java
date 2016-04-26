@@ -34,4 +34,8 @@ public class Planet {
     public String getName() {
         return name;
     }
+
+    public void setNode(String node) {
+        this.node = node;
+    }
 }
