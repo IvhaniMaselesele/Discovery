@@ -21,7 +21,8 @@ public class DiscoveryAssignmentApplication {
 
     @Bean
     public RestTemplate restTemplate() {
-        return new RestTemplate();
+        RestTemplate template = new RestTemplate();
+        return template;
     }
 
 }

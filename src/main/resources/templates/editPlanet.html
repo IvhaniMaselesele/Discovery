@@ -12,13 +12,11 @@
     <!--/*/ <th:block th:include="fragments/header :: header"></th:block> /*/-->
     <div class="jumbotron">
         <div>
-
             <div class="form-group">
                 <label class="form-control" for="name">Name:</label>
                 <input class="form-control" type="text" id="name" name="name"/>
             </div>
             <input type="hidden" name="node" id="node"/>
-            <!--<button onclick="editPlanet()" class="btn btn-success form-control" type="submit">Submit</button>-->
             <input onclick="editPlanet()" class="btn btn-success form-control" type="submit"/>
 
 
@@ -27,19 +25,14 @@
 
     <script th:inline="javascript">
         document.getElementById("name").value = [[${planet.name}]];
-        alert(document.getElementById("name").value);
-
-
         var planetNode = [[${planet.node}]];
         function editPlanet() {
             var planetName = document.getElementById("name").value;
-            alert(planetName + " : " + planetNode);
             $.ajax({
                 datatype: "json",
                 type: "PUT",
                 url: "/editPlanetPageSubmit",
                 data: {node: planetNode, name: planetName},
-//                data: "name="+planetName+"&amp;node=" + planetNode,
                 success: function (response) {
                     window.location.href = "/planetsList";
                 },
@@ -47,21 +40,8 @@
                     alert('Error: ' + e);
                 }
             });
-
         }
     </script>
-    <!--
-
-        <script th:inline="javascript">
-            /*<![CDATA[*/
-            var planetName = [[${planet.name}]];
-            var planetNode = [[${planet.node}]];
-
-            function editPlanet() {
-                alert(planetName+" : "+planetNode)
-            }
-    -->
-
 </div>
 
 

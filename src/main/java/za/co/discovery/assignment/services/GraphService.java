@@ -11,6 +11,10 @@ public class GraphService {
         return new Graph();
     }
 
+    public void addPlanet(Graph graph, Planet planet) {
+        graph.addPlanet(planet);
+    }
+
     public void addPlanet(Graph graph, String node, String name) {
         Planet vertex = new Planet(node, name);
         graph.addPlanet(vertex);

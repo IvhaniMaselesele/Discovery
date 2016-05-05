@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head lang="en">
+
+    <title>Spring Framework Guru</title>
+
+    <!--/*/ <th:block th:include="fragments/headerinc :: head"></th:block> /*/-->
+</head>
+<body>
+
+<div class="container">
+    <!--/*/ <th:block th:include="fragments/header :: header"></th:block> /*/-->
+    <div class="jumbotron">
+        <div>
+            <!--<select class="form-control" id="sourceDropdownList" >
+                <option th:each="vertex : ${planets}" th:value="${vertex.node}" th:text="${vertex.name}">Wireframe
+                </option>
+            </select>
+            <select class="form-control" id="destinationDropdownList" >
+                <option  th:each="vertex : ${planets}" th:value="${vertex.node}" th:text="${vertex.name}">Wireframe
+                </option>
+            </select>
+            <input class="form-control" type="number" step="0.01"  id="weight"/>
+            <input class="form-control" type="number" step="0.01"  id="traffic"/>
+            <input class="form-control" type="hidden"  name="edgeId"/>-->
+
+            <div class="form-group">
+                <label class="form-control" for="sourceDropdownList">Origin Planet:</label>
+                <select id="sourceDropdownList" name="originId" class="form-control">
+                    <option th:each="vertex : ${planets}" th:value="${vertex.node}" th:text="${vertex.name}">Wireframe
+                    </option>
+                </select>
+            </div>
+
+
+            <div class="form-group">
+                <label class="form-control" for="destinationDropdownList">Destination Planet:</label>
+                <select id="destinationDropdownList" name="destinationId" class="form-control">
+                    <option th:each="vertex : ${planets}" th:value="${vertex.node}" th:text="${vertex.name}">Wireframe
+                    </option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label class="form-control" for="weight">Name:</label>
+                <input class="form-control" type="number" step="0.01" id="weight" name="weight"/>
+            </div>
+
+            <div class="form-group">
+                <label class="form-control" for="traffic">Name:</label>
+                <input class="form-control" type="number" step="0.01" id="traffic" name="traffic"/>
+            </div>
+
+
+            <input onclick="editPlanet()" class="btn btn-success form-control" type="submit"/>
+            <script th:inline="javascript">
+                /*<![CDATA[*/
+                var planetName = [[${edge.origin.node}]];
+                var planetName2 = [[${edge.destination.node}]];
+                var elementById = document.getElementById('sourceDropdownList');
+                var elementById2 = document.getElementById('destinationDropdownList');
+                setSelectedIndex(elementById, planetName);
+                setSelectedIndex(elementById2, planetName2);
+
+                function setSelectedIndex(s, v) {
+                    for (var i = 0; i < s.options.length; i++) {
+                        if (s.options[i].value == v) {
+                            s.options[i].selected = true;
+                            return;
+                        }
+                    }
+                }
+                /*]]>*/
+
+
+                document.getElementById("weight").value = [[${edge.weight}]];
+                document.getElementById("traffic").value = [[${edge.traffic}]];
+
+                function editPlanet() {
+
+                    var origin = document.getElementById("sourceDropdownList").value;
+                    var destination = document.getElementById("destinationDropdownList").value;
+                    var edgeId = [[${edge.edgeId}]];
+                    var distance = document.getElementById("weight").value;
+                    var traffic = document.getElementById("traffic").value;
+
+                    $.ajax({
+                        type: "PUT",
+                        url: "/editRoutePageSubmit",
+                        data: {
+                            edgeId: edgeId,
+                            originId: origin,
+                            destinationId: destination,
+                            weight: distance,
+                            traffic: traffic
+                        },
+                        success: function (response) {
+                            window.location.href = "/routesList";
+                        },
+                        error: function (e) {
+                            alert('Error: ' + e);
+                        }
+                    });
+
+                }
+
+
+            </script>
+
+        </div>
+    </div>
+
+</div>
+</body>
+</html>
+
+
+

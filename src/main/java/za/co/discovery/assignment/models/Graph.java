@@ -17,7 +17,6 @@ public class Graph {
         this.routes = new ArrayList<Route>();
     }
 
-
     public List<Planet> getPlanets() {
         return planets;
     }
@@ -35,20 +34,15 @@ public class Graph {
     }
 
     public Planet getPlanetByNode(String node) {
+        Planet p = null;
         for (Planet planet : planets) {
             if (node.equals(planet.getNode())) {
-                return planet;
+                p = planet;
+                break;
             }
         }
-        return null;
+        return p;
     }
 
-    public Route getRouteById(String id) {
-        for (Route route : routes) {
-            if (id.equals(route.getId())) {
-                return route;
-            }
-        }
-        return null;
-    }
+
 }

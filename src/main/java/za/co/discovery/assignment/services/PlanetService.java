@@ -25,11 +25,16 @@ public class PlanetService {
         return planetDAO.retrieveAll();
     }
 
+    //    TODO : This method is redundant - getPlanetById
     public Planet retrievePlanet(String planetId) {
         return planetDAO.retrieve(planetId);
     }
 
     public void deletePlanet(String planetNode) {
         planetDAO.deleteByNode(planetNode);
+    }
+
+    public Planet getPlanetById(String originId) {
+        return planetDAO.retrieve(originId);
     }
 }

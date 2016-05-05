@@ -3,16 +3,14 @@ package za.co.discovery.assignment.contollers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
+import za.co.discovery.assignment.models.Edge;
 import za.co.discovery.assignment.models.Graph;
 import za.co.discovery.assignment.models.Planet;
-import za.co.discovery.assignment.services.FileReadingService;
-import za.co.discovery.assignment.services.GraphService;
-import za.co.discovery.assignment.services.PlanetService;
+import za.co.discovery.assignment.models.Route;
+import za.co.discovery.assignment.services.*;
 
+import java.util.LinkedList;
 import java.util.UUID;
 
 @Controller
@@ -21,15 +19,18 @@ public class RootController {
     FileReadingService fileReadingService;
     GraphService graphService;
     Graph graph;
+    private RouteService routeService;
 
     @Autowired
-    public RootController(PlanetService planetService, FileReadingService fileReadingService, GraphService graphService) {
+    public RootController(PlanetService planetService, FileReadingService fileReadingService, GraphService graphService, RouteService routeService) {
+        this.routeService = routeService;
         this.planetService = planetService;
         this.fileReadingService = fileReadingService;
         this.graphService = graphService;
         graph = graphService.createNewGraph();
+        //TODO : post constuct
         fileReadingService.readPlanetSheet();
-
+        fileReadingService.readRouteAndTrafficSheets();
     }
 
     @RequestMapping("/")
@@ -82,15 +83,88 @@ public class RootController {
 
     @RequestMapping("/routesList")
     public String getRoutesList(Model model) {
-        model.addAttribute("routes", planetService.getPlanets());
+        model.addAttribute("routes", routeService.getRoutes());
         return "routesList";
     }
-    /*
-    @RequestMapping("planet/{id}")
-    public String showPlanet(@PathVariable Integer id, Model model){
-        model.addAttribute("product", productService.getProductById(id));
-        return "productshow";
-    }*/
 
+    @RequestMapping("/addRoutePage")
+    public String addRouteGet(Model model) {
+        String edgeId = (routeService.getRoutes().size() + 1) + "";
+        Edge edge = new Edge();
+        edge.setEdgeId(edgeId);
+        model.addAttribute("planets", planetService.getPlanets());
+        model.addAttribute("newEdge", edge);
+        return "createRoute";
+    }
+
+    @RequestMapping(value = "addRoutePageSubmit", method = RequestMethod.POST)
+    public String addRoutePageSubmit(@ModelAttribute(value = "newEdge") Edge edge, Model model) {
+        Planet originPlanet = planetService.getPlanetById(edge.getOriginId());
+        Planet destinationPlanet = planetService.getPlanetById(edge.getDestinationId());
+        Route route = routeService.createRoute(Integer.parseInt(edge.getEdgeId()), originPlanet, destinationPlanet, edge.getWeight(), edge.getTraffic());
+        routeService.persistRoute(route);
+        model.addAttribute("routes", routeService.getRoutes());
+        return "routesList";
+    }
+
+    @RequestMapping("/editRoutePage/{edge}")
+    public String editRoutePage(@PathVariable String edge, Model model) {
+        Edge edgeById = routeService.retrieveRouteAsEdge(Integer.parseInt(edge));
+        model.addAttribute("edge", edgeById);
+        model.addAttribute("planets", planetService.getPlanets());
+        return "editRoute";
+    }
+
+    @RequestMapping(value = "editRoutePageSubmit", method = RequestMethod.PUT)
+    public String editRoutePageSubmit(@ModelAttribute(value = "edge") Edge edge, Model model) {
+        Planet originPlanet = planetService.getPlanetById(edge.getOriginId());
+        Planet destinationPlanet = planetService.getPlanetById(edge.getDestinationId());
+        Route route = routeService.retrieveRoute(Integer.parseInt(edge.getEdgeId()));
+        route.setOrigin(originPlanet);
+        route.setDestination(destinationPlanet);
+        route.setTraffic(edge.getTraffic());
+        route.setDistance(edge.getWeight());
+
+        routeService.persistRoute(route);
+        model.addAttribute("routes", routeService.getRoutes());
+        model.addAttribute("planets", planetService.getPlanets());
+        return "routesList";
+    }
+
+    @RequestMapping(value = "/deleteRoute/{routeId}", method = RequestMethod.DELETE)
+    public String deleteRoute(@PathVariable String routeId, Model model) {
+        routeService.deleteRoute(routeId);
+        model.addAttribute("routes", routeService.getRoutes());
+        return "routesList";
+    }
+
+    @RequestMapping(
+            value = "shortestPath",
+            method = RequestMethod.GET)
+    public String getShortestPath(Model model) {
+        graph = new Graph(planetService.getPlanets(), routeService.getRoutes());
+        model.addAttribute("mapList", planetService.getPlanets());
+        return "shortestPath";
+    }
+
+    @RequestMapping(value = "shortestPath/{planet}", method = RequestMethod.GET)
+    @ResponseBody
+    public LinkedList<String> shortestPath(@PathVariable String planet) {
+        String node = planet.split(",")[0];
+        String withTraffic = planet.split(",")[1];
+
+        DijkstraAlgorithm dijkstra = new DijkstraAlgorithm(graph);
+        if (withTraffic.equals("true")) {
+            dijkstra.setWithTraffic(true);
+        }
+        dijkstra.execute(graph.getPlanets().get(0));
+        LinkedList<String> path = dijkstra.getPath(graph.getPlanetByNode(node));
+        if (path == null) {
+            path = new LinkedList<>();
+            path.add("No Path From : " + graph.getPlanets().get(0).getName() + " to : " +
+                    graph.getPlanetByNode(node).getName());
+        }
+        return path;
+    }
 
 }

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head lang="en">
+
+    <title>Spring Framework Guru</title>
+
+    <!--/*/ <th:block th:include="fragments/headerinc :: head"></th:block> /*/-->
+</head>
+<body>
+
+<div class="container">
+    <!--/*/ <th:block th:include="fragments/header :: header"></th:block> /*/-->
+    <div class="jumbotron">
+        <div>
+            <form modelAttribute="newEdge" th:object="${newEdge}" th:action="@{/addRoutePageSubmit}"
+                  method="post">
+
+
+                <div class="form-group">
+                    <label class="form-control" for="originId">Origin Planet:</label>
+                    <select id="originId" name="originId" class="form-control" th:field="*{originId}">
+                        <option th:each="vertex : ${planets}" th:value="${vertex.node}" th:text="${vertex.name}">
+                            Wireframe
+                        </option>
+                    </select>
+                </div>
+
+
+                <div class="form-group">
+                    <label class="form-control" for="destinationId">Destination Planet:</label>
+                    <select id="destinationId" name="destinationId" class="form-control" th:field="*{destinationId}">
+                        <option th:each="vertex : ${planets}" th:value="${vertex.node}" th:text="${vertex.name}">
+                            Wireframe
+                        </option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-control" for="weight">Distance:</label>
+                    <input class="form-control" type="number" step="0.01" th:field="*{weight}" id="weight"
+                           name="weight"/>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-control" for="traffic">Traffic:</label>
+                    <input class="form-control" type="number" step="0.01" th:field="*{traffic}" id="traffic"
+                           name="traffic"/>
+                </div>
+                <input type="hidden" th:field="*{edgeId}" name="edgeId"/>
+                <button class="btn btn-success form-control" type="submit">Submit</button>
+            </form>
+        </div>
+    </div>
+    <!--
+        <div class="form-group">
+            <label class="form-control" for="name">Name:</label>
+            <input class="form-control" type="text" th:field="*{name}" id="name" name="name"/>
+        </div>
+
+        -->
+</div>
+</body>
+</html>
+
+
+

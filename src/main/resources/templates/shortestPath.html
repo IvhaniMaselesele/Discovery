@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head lang="en">
+    <title>Spring Framework Guru</title>
+
+    <!--/*/ <th:block th:include="fragments/headerinc :: head"></th:block> /*/-->
+    <script th:inline="javascript">
+        function submitDestinationPlanet(planet) {
+            var id = planet.value;
+            var withTraffic = document.getElementById("withTraffic").checked;
+            var toSend = id + ',' + withTraffic;
+            alert(toSend);
+            $.ajax({
+                datatype: "json",
+                type: "GET",
+                url: "/shortestPath/" + toSend,
+                async: true,
+                success: function (response, status) {
+                    var resp = $('#output');
+                    resp.html(
+                            '<h2>Shortest Path</h2>' +
+                            '<h2>' + response + '</h2>'
+                    );
+                },
+                error: function (e) {
+                    alert('Error: ' + e);
+                }
+            });
+        }
+    </script>
+</head>
+
+<body>
+<div class="container">
+    <!--/*/ <th:block th:include="fragments/header :: header"></th:block> /*/-->
+    <div class="jumbotron">
+        <form action="">
+            <input id="withTraffic" type="checkbox" name="withTraffic" value="withTraffic"/>Calculate with
+            traffic<br> </br>
+        </form>
+        <div th:switch="${roundNumber}">
+            <div>
+                <select class="form-control" id="planetname"
+                        onchange="submitDestinationPlanet(this)">
+                    <option th:each="vertex : ${mapList}" th:value="${vertex.node}" th:text="${vertex.name}">
+                        Wireframe
+                    </option>
+                </select>
+            </div>
+            <div id="output"></div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+
+
+

@@ -9,18 +9,30 @@ public class Route {
     @Column(nullable = false)
     int id;
 
+    public void setId(int id) {
+        this.id = id;
+    }
+
     @OneToOne(fetch = FetchType.EAGER)
     private Planet origin;
 
+    public void setDestination(Planet destination) {
+        this.destination = destination;
+    }
+
     @OneToOne(fetch = FetchType.EAGER)
     private Planet destination;
+
+    public void setDistance(double distance) {
+        this.distance = distance;
+    }
 
     @Column
     private double distance;
     @Column
     private double traffic;
 
-    protected Route() {
+    public Route() {
 
     }
 
@@ -31,9 +43,12 @@ public class Route {
         this.distance = distance;
     }
 
-    @Override
-    public String toString() {
-        return Integer.toString(id) + "\t" + origin + "\t" + destination + "\t" + distance;
+    public Route(int id, Planet origin, Planet destination, double distance, double traffic) {
+        this.id = id;
+        this.origin = origin;
+        this.destination = destination;
+        this.distance = distance;
+        this.traffic = traffic;
     }
 
     public double getDistance() {

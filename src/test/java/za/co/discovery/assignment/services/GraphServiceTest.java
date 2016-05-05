@@ -21,12 +21,23 @@ public class GraphServiceTest {
     }
 
     @Test
-    public void addPlanet_ShouldUpdateListOfPlanets() throws Exception {
+    public void addPlanetWithNodeAndName_ShouldUpdateListOfPlanets() throws Exception {
         setUpFixture();
         String name = "random name";
         String node = "random node";
         assertThat(graph.getPlanets().size(), is(0));
         graphService.addPlanet(graph, node, name);
+        assertThat(graph.getPlanets().size(), is(1));
+    }
+
+    @Test
+    public void addPlanetWithPlanet_ShouldUpdateListOfPlanets() throws Exception {
+        setUpFixture();
+        String name = "random name";
+        String node = "random node";
+        Planet planet = new Planet(node, name);
+        assertThat(graph.getPlanets().size(), is(0));
+        graphService.addPlanet(graph, planet);
         assertThat(graph.getPlanets().size(), is(1));
     }
 

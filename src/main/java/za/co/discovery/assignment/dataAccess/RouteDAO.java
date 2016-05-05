@@ -9,6 +9,8 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import za.co.discovery.assignment.models.Route;
 
+import java.util.List;
+
 import static org.hibernate.criterion.Restrictions.eq;
 
 @Repository
@@ -39,11 +41,17 @@ public class RouteDAO {
         return (Route) session.merge(route);
     }
 
-    public void deleteByNode(int id) {
+    public void deleteById(int id) {
         Session session = sessionFactory.getCurrentSession();
         Query query = session.createQuery("delete Route where id = :id");
         query.setParameter("id", id);
 
         query.executeUpdate();
+    }
+
+    public List<Route> retrieveAll() {
+        Session session = sessionFactory.getCurrentSession();
+        Criteria criteria = session.createCriteria(Route.class);
+        return (List<Route>) criteria.list();
     }
 }

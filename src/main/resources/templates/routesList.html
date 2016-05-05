@@ -12,34 +12,40 @@
     <!--/*/ <th:block th:include="fragments/header :: header"></th:block> /*/-->
     <div class="jumbotron">
         <div>
-            <a href="/addPlanetPage" class="btn btn-success optionButtons" role="button">New Planet</a><br/><br/>
+            <a href="/addRoutePage" class="btn btn-success optionButtons" role="button">New Route</a><br/><br/>
             <table class="table table-bordered table-hover">
                 <tr>
                     <th></th>
-                    <th>Planet name</th>
+                    <th>Source planet</th>
+                    <th>Destination planet</th>
+                    <th>Distance</th>
+                    <th>Traffic</th>
                     <th></th>
-                    <!--<th></th>-->
+                    <th></th>
                 </tr>
-                <tr th:each="p,iterationStatus  : ${planets}">
+                <tr th:each="r,iterationStatus  : ${routes}">
                     <td th:text="${iterationStatus.count}">1</td>
-                    <td th:text="${p.name}">001</td>
-                    <td><a th:href="${'/editPlanetPage/'}+${p.node}">Edit</a></td>
-                    <!--<td><a th:onclick="'javascript:deletePlanet(\'' + ${p.node} + '\');'">Delete</a></td>-->
+                    <td th:text="${r.origin.name}">001</td>
+                    <td th:text="${r.destination.name}">001</td>
+                    <td th:text="${r.distance}">001</td>
+                    <td th:text="${r.traffic}">001</td>
+                    <td><a th:href="${'/editRoutePage/'}+${r.id}">Edit</a></td>
+                    <td><a th:onclick="'javascript:deleteRoute(\'' + ${r.id} + '\');'">Delete</a></td>
                 </tr>
             </table>
         </div>
     </div>
 
     <script th:inline="javascript">
-        function deletePlanet(node) {
+        function deleteRoute(id) {
             $.ajax({
                 datatype: "json",
                 type: "DELETE",
-                url: "/deletePlanet/" + node,
+                url: "/deleteRoute/" + id,
                 async: true,
                 //data: {node: node},
                 success: function (response) {
-                    window.location.href = "/planetsList";
+                    window.location.href = "/routesList";
                 },
                 error: function (e) {
                     alert('Error: ' + e);
