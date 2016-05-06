@@ -148,7 +148,8 @@ public class RootController {
             value = "shortestPath",
             method = RequestMethod.GET)
     public String getShortestPath(Model model) {
-        graph = new Graph(planetService.getPlanets(), routeService.getRoutes());
+//        graph = new Graph(planetService.getPlanets(), routeService.getRoutes());
+        graph = graphService.createNewGraph(planetService.getPlanets(), routeService.getRoutes());
         model.addAttribute("mapList", planetService.getPlanets());
         return "shortestPath";
     }
@@ -156,7 +157,8 @@ public class RootController {
     @RequestMapping(value = "shortestPath/{planet}", method = RequestMethod.GET)
     @ResponseBody
     public LinkedList<String> shortestPath(@PathVariable String planet) {
-        graph = new Graph(planetService.getPlanets(), routeService.getRoutes());
+        //graph = new Graph(planetService.getPlanets(), routeService.getRoutes());
+        graph = graphService.createNewGraph(planetService.getPlanets(), routeService.getRoutes());
         String node = planet.split(",")[0];
         String withTraffic = planet.split(",")[1];
 

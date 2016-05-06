@@ -5,10 +5,16 @@ import za.co.discovery.assignment.models.Graph;
 import za.co.discovery.assignment.models.Planet;
 import za.co.discovery.assignment.models.Route;
 
+import java.util.List;
+
 @Service
 public class GraphService {
     public Graph createNewGraph() {
         return new Graph();
+    }
+
+    public Graph createNewGraph(List<Planet> planets, List<Route> routes) {
+        return new Graph(planets, routes);
     }
 
     public void addPlanet(Graph graph, Planet planet) {

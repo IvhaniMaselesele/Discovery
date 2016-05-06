@@ -49,7 +49,6 @@ public class FileReadingService {
         getTraffic(workbook);
     }
 
-    //TODO :  rename this method
     private void getPlanetRowValues(Iterator<Row> rowIterator) {
         while (rowIterator.hasNext()) {
             Row row = rowIterator.next();

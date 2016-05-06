@@ -3,6 +3,10 @@ package za.co.discovery.assignment.services;
 import org.junit.Test;
 import za.co.discovery.assignment.models.Graph;
 import za.co.discovery.assignment.models.Planet;
+import za.co.discovery.assignment.models.Route;
+
+import java.util.LinkedList;
+import java.util.List;
 
 import static com.shazam.shazamcrest.matcher.Matchers.sameBeanAs;
 import static org.hamcrest.Matchers.is;
@@ -17,6 +21,16 @@ public class GraphServiceTest {
         setUpFixture();
         Graph expectedGraph = new Graph();
         Graph actualGraph = graphService.createNewGraph();
+        assertThat(actualGraph, sameBeanAs(expectedGraph));
+    }
+
+    @Test
+    public void createNewGraphWithParameters_ShouldReturnNewInstanceOfGraph() throws Exception {
+        setUpFixture();
+        List<Planet> planets = new LinkedList<>();
+        List<Route> routes = new LinkedList<>();
+        Graph expectedGraph = new Graph(planets, routes);
+        Graph actualGraph = graphService.createNewGraph(planets, routes);
         assertThat(actualGraph, sameBeanAs(expectedGraph));
     }
 

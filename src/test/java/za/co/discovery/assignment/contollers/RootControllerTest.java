@@ -203,7 +203,7 @@ public class RootControllerTest {
     }
 
     @Test
-    public void test() throws Exception {
+    public void shortestPath_ShouldReturnLinkedListWithPath() throws Exception {
         setupFixture();
         Planet planet1 = aPlanet("A", "Anna");
         Planet planet2 = aPlanet("B", "BOb");
@@ -214,6 +214,9 @@ public class RootControllerTest {
         LinkedList<String> expectedPath = new LinkedList<>();
         expectedPath.add("Anna");
         expectedPath.add("BOb");
+        when(graphService.createNewGraph(graph.getPlanets(), graph.getRoutes())).thenReturn(graph);
+        when(planetService.getPlanets()).thenReturn(graph.getPlanets());
+        when(routeService.getRoutes()).thenReturn(graph.getRoutes());
 
         ResultActions result = mockMvc.perform(get("/shortestPath/" + planet2.getNode() + ",true")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -237,6 +240,10 @@ public class RootControllerTest {
         graph.addPlanet(planet2);
         LinkedList<String> expectedPath = new LinkedList<>();
         expectedPath.add("No Path From : " + planet1.getName() + " to : " + planet2.getName());
+
+        when(graphService.createNewGraph(graph.getPlanets(), graph.getRoutes())).thenReturn(graph);
+        when(planetService.getPlanets()).thenReturn(graph.getPlanets());
+        when(routeService.getRoutes()).thenReturn(graph.getRoutes());
 
         ResultActions result = mockMvc.perform(get("/shortestPath/" + planet2.getNode() + ",true")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -266,6 +273,9 @@ public class RootControllerTest {
         graph.addRoute(route2);
         graph.addRoute(route3);
 
+        when(graphService.createNewGraph(graph.getPlanets(), graph.getRoutes())).thenReturn(graph);
+        when(planetService.getPlanets()).thenReturn(graph.getPlanets());
+        when(routeService.getRoutes()).thenReturn(graph.getRoutes());
 
         LinkedList<String> expectedPath = new LinkedList<>();
         expectedPath.add("Anna");
@@ -309,6 +319,7 @@ public class RootControllerTest {
         routeService = new RouteService(routeDAO);
 
         when(graphService.createNewGraph()).thenReturn(graph);
+
 
         mockMvc = standaloneSetup(
                 new RootController(planetService,

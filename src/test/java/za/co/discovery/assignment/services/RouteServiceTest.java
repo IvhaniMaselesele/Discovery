@@ -90,6 +90,7 @@ public class RouteServiceTest {
                 .withDistance(distance)
                 .withDestination(destination)
                 .withOrigin(origin)
+                .withTraffic(traffic)
                 .build();
 
         Route actualRoute = routeService.createRoute(i, origin, destination, distance, traffic);
