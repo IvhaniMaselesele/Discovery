@@ -14,24 +14,26 @@ import za.co.discovery.assignment.models.Planet;
 import za.co.discovery.assignment.services.*;
 
 import javax.annotation.PostConstruct;
+import java.io.InputStream;
 import java.util.LinkedList;
 
 @Component
 public class PathRepository {
 
+    private final InputStream inputStream;
     private PlanetService planetService;
     private RouteService routeService;
     private GraphService graphService;
 
     private FileReadingService fileReadingService;
-    private Graph graph;
     @Autowired
     @Qualifier("transactionManager")
     protected PlatformTransactionManager platformTransactionManager;
 
 
     @Autowired
-    public PathRepository(FileReadingService fileReadingService, GraphService graphService, PlanetService planetService, RouteService routeService) {
+    public PathRepository(FileReadingService fileReadingService, GraphService graphService, PlanetService planetService, RouteService routeService, InputStream inputStream) {
+        this.inputStream = inputStream;
         this.graphService = graphService;
         this.fileReadingService = fileReadingService;
         this.planetService = planetService;
@@ -44,9 +46,6 @@ public class PathRepository {
         tpl.execute(new TransactionCallbackWithoutResult() {
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-
-                fileReadingService.readPlanetSheet();
-                fileReadingService.readRouteAndTrafficSheets();
             }
         });
     }
@@ -56,12 +55,21 @@ public class PathRepository {
 
         Graph graph = new Graph(planetService.getPlanets(), routeService.getRoutes());
         Planet planet = graph.getPlanetByNode(node);
+
         DijkstraAlgorithm dijkstra = new DijkstraAlgorithm(graph);
         dijkstra.execute(graph.getPlanets().get(0));
+
         LinkedList<String> pathList = dijkstra.getPath(planet);
-        String p = "";
-        for (String v : pathList) {
-            p += v + ",";
+        String p;
+        if (pathList == null) {
+            p = "No Path From : " + graph.getPlanets().get(0).getName() + " to : " +
+                    planet.getName();
+        } else {
+
+            p = "";
+            for (String v : pathList) {
+                p += v + ",";
+            }
         }
         Path path = new Path();
         path.setName("Path from:");

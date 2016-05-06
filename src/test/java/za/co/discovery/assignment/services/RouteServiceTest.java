@@ -98,6 +98,24 @@ public class RouteServiceTest {
 
     }
 
+    @Test
+    public void getLastKey_ShouldReturnKeyNotInDatabase() throws Exception {
+        setUpFixture();
+        int expectedLastKey = 2;
+
+
+        Route route = RouteBuilder.
+                aRoute()
+                .withId(1)
+                .build();
+        routeService.persistRoute(route);
+        when(routeDAO.retrieveAll()).thenReturn(singletonList(route));
+        when(routeDAO.retrieve(1)).thenReturn(route);
+
+        int actualLastKey = routeService.getNextAvailableKey();
+        assertThat(actualLastKey, sameBeanAs(expectedLastKey));
+    }
+
     public void setUpFixture() {
         routeService = new RouteService(routeDAO);
     }

@@ -18,6 +18,7 @@ import za.co.discovery.assignment.services.GraphService;
 import za.co.discovery.assignment.services.PlanetService;
 import za.co.discovery.assignment.services.RouteService;
 
+import java.io.InputStream;
 import java.util.LinkedList;
 
 import static com.shazam.shazamcrest.MatcherAssert.assertThat;
@@ -301,6 +302,7 @@ public class RootControllerTest {
     }
 
     public void setupFixture() {
+        InputStream inputStream = mock(InputStream.class);
         graphService = mock(GraphService.class);
         graph = new Graph();
         planetService = new PlanetService(planetDAO);
@@ -310,7 +312,7 @@ public class RootControllerTest {
 
         mockMvc = standaloneSetup(
                 new RootController(planetService,
-                        new FileReadingService(planetDAO, routeDAO, planetService, routeService), graphService, routeService))
+                        new FileReadingService(planetDAO, routeDAO, planetService, routeService, inputStream), graphService, routeService))
                 .setViewResolvers(getInternalResourceViewResolver())
                 .build();
     }

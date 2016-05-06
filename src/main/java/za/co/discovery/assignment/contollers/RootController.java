@@ -11,6 +11,7 @@ import za.co.discovery.assignment.models.Route;
 import za.co.discovery.assignment.services.*;
 
 import java.util.LinkedList;
+import java.util.List;
 import java.util.UUID;
 
 @Controller
@@ -29,8 +30,8 @@ public class RootController {
         this.graphService = graphService;
         graph = graphService.createNewGraph();
         //TODO : post constuct
-        fileReadingService.readPlanetSheet();
-        fileReadingService.readRouteAndTrafficSheets();
+        //fileReadingService.readPlanetSheet();
+        //fileReadingService.readRouteAndTrafficSheets(workbook);
     }
 
     @RequestMapping("/")
@@ -89,7 +90,11 @@ public class RootController {
 
     @RequestMapping("/addRoutePage")
     public String addRouteGet(Model model) {
-        String edgeId = (routeService.getRoutes().size() + 1) + "";
+        List<Route> routes = routeService.getRoutes();
+        int size = routes.size();
+        System.out.println(size);
+        System.out.println("\n\n\n\n\n\n");
+        String edgeId = (routeService.getNextAvailableKey()) + "";
         Edge edge = new Edge();
         edge.setEdgeId(edgeId);
         model.addAttribute("planets", planetService.getPlanets());
@@ -99,6 +104,7 @@ public class RootController {
 
     @RequestMapping(value = "addRoutePageSubmit", method = RequestMethod.POST)
     public String addRoutePageSubmit(@ModelAttribute(value = "newEdge") Edge edge, Model model) {
+        List<Route> routes = routeService.getRoutes();
         Planet originPlanet = planetService.getPlanetById(edge.getOriginId());
         Planet destinationPlanet = planetService.getPlanetById(edge.getDestinationId());
         Route route = routeService.createRoute(Integer.parseInt(edge.getEdgeId()), originPlanet, destinationPlanet, edge.getWeight(), edge.getTraffic());
@@ -150,6 +156,7 @@ public class RootController {
     @RequestMapping(value = "shortestPath/{planet}", method = RequestMethod.GET)
     @ResponseBody
     public LinkedList<String> shortestPath(@PathVariable String planet) {
+        graph = new Graph(planetService.getPlanets(), routeService.getRoutes());
         String node = planet.split(",")[0];
         String withTraffic = planet.split(",")[1];
 

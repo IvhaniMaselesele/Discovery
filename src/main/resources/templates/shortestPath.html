@@ -9,7 +9,6 @@
             var id = planet.value;
             var withTraffic = document.getElementById("withTraffic").checked;
             var toSend = id + ',' + withTraffic;
-            alert(toSend);
             $.ajax({
                 datatype: "json",
                 type: "GET",

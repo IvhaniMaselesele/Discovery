@@ -11,15 +11,15 @@ import za.co.discovery.assignment.dataAccess.RouteDAO;
 import za.co.discovery.assignment.models.Planet;
 import za.co.discovery.assignment.models.Route;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import javax.annotation.PostConstruct;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Iterator;
 
 @Service
 public class FileReadingService {
 
+    private final InputStream inputStream;
     PlanetDAO planetDAO;
     RouteDAO routeDAO;
     PlanetService planetService;
@@ -27,26 +27,26 @@ public class FileReadingService {
 
 
     @Autowired
-    public FileReadingService(PlanetDAO planetDAO, RouteDAO routeDAO, PlanetService planetService, RouteService routeService) {
+    public FileReadingService(PlanetDAO planetDAO, RouteDAO routeDAO, PlanetService planetService, RouteService routeService, InputStream inputStream) {
+        this.inputStream = inputStream;
         this.routeService = routeService;
         this.planetService = planetService;
         this.planetDAO = planetDAO;
         this.routeDAO = routeDAO;
     }
 
-    public void readPlanetSheet() {
-        try {//TODO : Use Resource as a bean
-            String fileName = new File("./").getCanonicalPath() + "\\src\\main\\java\\za\\co\\discovery\\assignment\\dataObjects\\planetTravelDetails.xlsx";
-            FileInputStream file = new FileInputStream(fileName);
+    @PostConstruct
+    public void readFile() throws IOException {
+        XSSFWorkbook workbook = new XSSFWorkbook(inputStream);
+        readPlanetSheet(workbook);
+        readRouteAndTrafficSheets(workbook);
+    }
 
-            XSSFWorkbook workbook = new XSSFWorkbook(file);
+    public void readPlanetSheet(XSSFWorkbook workbook) {
             XSSFSheet sheet = workbook.getSheetAt(0);
             Iterator<Row> rowIterator = sheet.iterator();
             getPlanetRowValues(rowIterator);
-            file.close();
-        } catch (FileNotFoundException e) {
-        } catch (IOException e) {
-        }
+        getTraffic(workbook);
     }
 
     //TODO :  rename this method
@@ -75,64 +75,41 @@ public class FileReadingService {
         }
     }
 
-    public void readRouteAndTrafficSheets() {
-        try {
-            String fileName = new File("./").getCanonicalPath() + "\\src\\main\\java\\za\\co\\discovery\\assignment\\dataObjects\\planetTravelDetails.xlsx";
-            FileInputStream file = new FileInputStream(fileName);
-
-            XSSFWorkbook workbook = new XSSFWorkbook(file);
-            XSSFSheet sheet = workbook.getSheetAt(1);
-            Iterator<Row> rowIterator = sheet.iterator();
-            while (rowIterator.hasNext()) {
-                Row row = rowIterator.next();
-                Iterator<Cell> cellIterator = row.cellIterator();
-                Route route = getRouteRowValues(cellIterator);
-                if (route != null) {
-                    if (route.getDestination() != null && route.getOrigin() != null) {
-                        routeService.persistRoute(route);
-                    }
+    public void readRouteAndTrafficSheets(XSSFWorkbook workbook) {
+        XSSFSheet sheet = workbook.getSheetAt(1);
+        Iterator<Row> rowIterator = sheet.iterator();
+        while (rowIterator.hasNext()) {
+            Row row = rowIterator.next();
+            Iterator<Cell> cellIterator = row.cellIterator();
+            Route route = getRowValues(cellIterator);
+            if (route != null) {
+                if (route.getDestination() != null && route.getOrigin() != null) {
+                    routeService.persistRoute(route);
                 }
             }
-            file.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        getTraffic();
-    }
-
-    public void getTraffic() {
-        try {
-            String fileName = new File("./").getCanonicalPath() + "\\src\\main\\java\\za\\co\\discovery\\assignment\\dataObjects\\planetTravelDetails.xlsx";
-            FileInputStream file = new FileInputStream(fileName);
-            XSSFWorkbook workbook = new XSSFWorkbook(file);
-            XSSFSheet sheet = workbook.getSheetAt(2);
-
-            Iterator<Row> rowIterator = sheet.iterator();
-            while (rowIterator.hasNext()) {
-                Row row = rowIterator.next();
-                Iterator<Cell> cellIterator = row.cellIterator();
-                Route route = getRouteRowValues(cellIterator);
-
-                if (route != null) {
-                    double traffic = route.getDistance();
-                    int id = route.getId();
-                    Route retrievedRoute = routeService.retrieveRoute(id);
-                    //TODO : use service todo this
-                    if (retrievedRoute != null) {
-                        retrievedRoute.setTraffic(traffic);
-                        routeService.persistRoute(retrievedRoute);
-                    }
-                }
-            }
-            file.close();
-        } catch (FileNotFoundException e) {
-        } catch (IOException e) {
         }
     }
 
-    private Route getRouteRowValues(Iterator<Cell> cellIterator) {
+    public void getTraffic(XSSFWorkbook workbook) {
+        XSSFSheet sheet = workbook.getSheetAt(2);
+        Iterator<Row> rowIterator = sheet.iterator();
+        while (rowIterator.hasNext()) {
+            Row row = rowIterator.next();
+            Iterator<Cell> cellIterator = row.cellIterator();
+            Route route = getRowValues(cellIterator);
+            if (route != null) {
+                double traffic = route.getDistance();
+                int id = route.getId();
+                Route retrievedRoute = routeService.retrieveRoute(id);
+                if (retrievedRoute != null) {
+                    retrievedRoute.setTraffic(traffic);
+                    routeService.persistRoute(retrievedRoute);
+                }
+            }
+        }
+    }
+
+    private Route getRowValues(Iterator<Cell> cellIterator) {
         String destination = "";
         double distance = 0;
         String origin = "";
@@ -143,7 +120,6 @@ public class FileReadingService {
                 case Cell.CELL_TYPE_NUMERIC:
                     if (cell.getColumnIndex() == 3) distance = cell.getNumericCellValue();
                     else if (cell.getColumnIndex() == 0) id = (int) cell.getNumericCellValue();
-
                     break;
                 case Cell.CELL_TYPE_STRING:
                     if (cell.getColumnIndex() == 1) origin = cell.getStringCellValue();

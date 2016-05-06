@@ -37,6 +37,23 @@ public class RouteService {
         return edge;
     }
 
+    public int getNextAvailableKey() {
+        List<Route> routes = getRoutes();
+        int size = routes.size();
+        int nextId = size;
+
+        while (true) {
+            Route route = retrieveRoute(nextId);
+            if (route == null) {
+                break;
+            } else {
+                nextId += 1;
+
+            }
+        }
+        return nextId;
+    }
+
     //TODO : Test this
     public void deleteRoute(String routeId) {
         routeDAO.deleteById(Integer.parseInt(routeId));
