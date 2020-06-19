@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head lang="en">
+
+    <title>Spring Framework Guru</title>
+
+    <!--/*/ <th:block th:include="fragments/headerinc :: head"></th:block> /*/-->
+</head>
+<body>
+
+<div class="container">
+    <!--/*/ <th:block th:include="fragments/header :: header"></th:block> /*/-->
+    <div class="jumbotron">
+        <div>
+            <a href="/addRoutePage" class="btn btn-success optionButtons" role="button">New Route</a><br/><br/>
+            <table class="table table-bordered table-hover">
+                <tr>
+                    <th></th>
+                    <th>Source planet</th>
+                    <th>Destination planet</th>
+                    <th>Distance</th>
+                    <th>Traffic</th>
+                    <th></th>
+                    <th></th>
+                </tr>
+                <tr th:each="r,iterationStatus  : ${routes}">
+                    <td th:text="${iterationStatus.count}">1</td>
+                    <td th:text="${r.origin.name}">001</td>
+                    <td th:text="${r.destination.name}">001</td>
+                    <td th:text="${r.distance}">001</td>
+                    <td th:text="${r.traffic}">001</td>
+                    <td><a th:href="${'/editRoutePage/'}+${r.id}">Edit</a></td>
+                    <td><a th:onclick="'javascript:deleteRoute(\'' + ${r.id} + '\');'">Delete</a></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+        function deleteRoute(id) {
+            $.ajax({
+                datatype: "json",
+                type: "DELETE",
+                url: "/deleteRoute/" + id,
+                async: true,
+                //data: {node: node},
+                success: function (response) {
+                    window.location.href = "/routesList";
+                },
+                error: function (e) {
+                    alert('Error: ' + e);
+                }
+            });
+
+        }
+    </script>
+
+
+</div>
+</body>
+</html>

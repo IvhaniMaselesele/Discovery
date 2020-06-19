@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head lang="en">
+
+    <title>Spring Framework Guru</title>
+
+    <!--/*/ <th:block th:include="fragments/headerinc :: head"></th:block> /*/-->
+</head>
+<body>
+
+<div class="container">
+    <!--/*/ <th:block th:include="fragments/header :: header"></th:block> /*/-->
+    <div class="jumbotron">
+        <div>
+            <form th:object="${planet}" th:action="@{/addPlanetPageSubmit}"
+                  method="post">
+                <div class="form-group">
+                    <label class="form-control" for="name">Name:</label>
+                    <input class="form-control" type="text" th:field="*{name}" id="name" name="name"/>
+                </div>
+                <input type="hidden" th:field="*{node}" name="node"/>
+                <button class="btn btn-success form-control" type="submit">Submit</button>
+            </form>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>
